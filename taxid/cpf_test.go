@@ -16,8 +16,8 @@ func TestParseCPF(t *testing.T) {
 	}{
 		// TODO: fill in with valid values. Generate them rather than inventing
 		// them by hand — a hand-written CPF almost never has correct check digits.
-		{name: "masked", in: "", want: ""},
-		{name: "bare", in: "", want: ""},
+		{name: "masked", in: "919.947.550-24", want: "919.947.550-24"},
+		{name: "bare", in: "91994755024", want: "919.947.550-24"},
 
 		// The eleven repeated-digit values pass modulus 11 arithmetic and must be
 		// rejected by rule. This is the case a naive implementation gets wrong.
@@ -41,8 +41,8 @@ func TestParseCPF(t *testing.T) {
 			if err != nil {
 				t.Fatalf("ParseCPF(%q) unexpected error: %v", tt.in, err)
 			}
-			if got.Unmasked() != tt.want {
-				t.Errorf("ParseCPF(%q) = %q, want %q", tt.in, got.Unmasked(), tt.want)
+			if got.Masked() != tt.want {
+				t.Errorf("ParseCPF(%q) = %q, want %q", tt.in, got.Masked(), tt.want)
 			}
 		})
 	}
@@ -63,7 +63,7 @@ func FuzzParseCPF(f *testing.F) {
 			t.Fatalf("ParseCPF(%q) accepted, but its String() %q was rejected: %v", s, c.String(), err)
 		}
 		if again != c {
-			t.Errorf("round trip changed the value: %q -> %q", c.Unmasked(), again.Unmasked())
+			t.Errorf("round trip changed the value: %q -> %q", c.Masked(), again.Masked())
 		}
 	})
 }
